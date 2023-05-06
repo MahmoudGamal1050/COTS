@@ -1,3 +1,9 @@
+/*
+ * RCC_program.c
+ *
+ * Created: 4/5/2023 
+ *  Author: Mahmoud Gamal
+ */ 
 #include "STD_TYPES.H"
 #include "BIT_MATH.H"
 #include "ERROR_STATUS.H"
@@ -16,7 +22,7 @@ void RCC_voidSysClkInt(void)
 		CLR_BIT( RCC_CFGR , 0  );
 		CLR_BIT( RCC_CFGR , 1  );
 
-	#elif RCC_SYS_CLK == HSE_
+	#elif RCC_SYS_CLK == HSE
 		/* Set HSEON (Bit 16) IN RCC_CR Register */
 		/* Clear CSSBYB to disable bybass */
 		SET_BIT( RCC_CR , 16 );
@@ -29,7 +35,7 @@ void RCC_voidSysClkInt(void)
 		/* Set HSEON (Bit 16) IN RCC_CR Register */
 		/* Set CSSBYB to enable bybass */
 		SET_BIT( RCC_CR , 16 );
-		CLR_BIT( RCC_CR , 18  );
+		SET_BIT( RCC_CR , 18  );
 
 		/*  RCC_CFGR SW[1:0] = 01 to select HSE as system clock */
 		SET_BIT( RCC_CFGR , 0  );
@@ -95,7 +101,7 @@ void		RCC_voidEnablePerClk(u8 BusId , u8 PerId)
 	{
 		switch(BusId)
 		{
-			case	RCC_AHB	:	SET_BIT(RCC_AHBENR,PerId) ;	break;
+			case	RCC_AHB	:	SET_BIT(RCC_AHBENR,PerId) ;		break;
 			case	RCC_APB1	:	SET_BIT(RCC_APB1ENR,PerId);	break;
 			case	RCC_APB2	:	SET_BIT(RCC_APB2ENR,PerId);	break;
 		
@@ -109,7 +115,7 @@ void		RCC_voidEnablePerClk(u8 BusId , u8 PerId)
 	}
 	
 }
-void		RCC_voidDisablePerClk(u8 BusId , u8 PerId)
+void	RCC_voidDisablePerClk	(u8 BusId , u8 PerId)
 {
 	/*	Range Check		*/
 	if(PerId < 32)

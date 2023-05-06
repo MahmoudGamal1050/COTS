@@ -1,3 +1,10 @@
+
+/*
+ * RCC_interface.h
+ *
+ * Created: 4/5/2023 
+ *  Author: Mahmoud Gamal
+ */ 
 #ifndef		RCC_INTERFACE_H
 #define		RCC_INTERFACE_H
 
@@ -8,7 +15,7 @@
  *  RCC SYSTEM CLOCK OPTIONS							     		                                                              
  *******************************************/
 #define HSI                         1
-#define HSE					2
+#define HSE							2
 #define HSE_BYPASS                  3
 #define PLL                         4
 #define PLL_HSI_DIVIDED_BY_2        5
@@ -18,7 +25,7 @@
 /******************************                                                          
  *  Bus IDS							     		                                                              
  ******************************/
-#define	RCC_AHB		0
+#define	RCC_AHB			0
 #define	RCC_APB1		1
 #define	RCC_APB2		2
 
