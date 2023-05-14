@@ -1,192 +1,168 @@
- /******************************************************************************
+/*
+ * LCD4BIT.c
  *
- * Module: LCD
- *
- * File Name: lcd.c
- *
- * Description: Source file for the LCD driver
- *
- * Author: Mahmoud Gamal
- *
- *******************************************************************************/
+ * Created: 3/13/2023 1:54:54 AM
+ *  Author: ahmed
+ */ 
 
-#include "lcd.h"
+//INCLUDEING PART 
+#include "LCD.h"
+#include "LCDEXTRA.h"
 
-/*******************************************************************************
- *                      Functions Definitions                                  *
- *******************************************************************************/
 
-void LCD_init(void)
+void	_delay_ms(u32 ticks)
 {
-	LCD_CTRL_PORT_DIR |= (1<<RS)|(1<<RW)|(1<<E); /* configure control pins as output*/
-
-	#if (LCD_mode==4)
-		#ifdef HIGH_4_PINS
-		LCD_DATA_PORT_DIR |= 0XF0;			/*  configure data pins as output*/
-		#else
-		LCD_DATA_PORT_DIR |= 0X0F;			/*  configure data pins as output*/
-		#endif
-
-		LCD_sendCommand(FOUR_BITS_DATA_MODE);
-		LCD_sendCommand(LCD_2_LINES_4_BIT);       /* select 2 lines LCD 8 bit mode */
-
-	#elif (LCD_mode==8)
-		LCD_DATA_PORT_DIR = 0XFF;			/*  configure data port as output*/
-		LCD_sendCommand(LCD_2_LINES_8_BIT);       /* select 2 lines LCD 8 bit mode */
-
-	#endif
-
-	LCD_sendCommand(CURSOR_OFF);
-	LCD_sendCommand(LCD_CLEAR);
-
-
+	u32 i;
+	for( i = 0; i < (ticks * 500) ; i++)
+	{
+		asm("NOP");
+	}
 }
 
 
-void LCD_sendCommand(u8 command)
-{
-	CLEAR_BIT(LCD_CTRL_PORT,RS);	/* Instruction Mode RS=0 */
-	CLEAR_BIT(LCD_CTRL_PORT,RW);	/* write data to LCD so RW=0 */
-	_delay_ms(1);			/* delay for processing Tas = 50ns */	
-	SET_BIT(LCD_CTRL_PORT,E);	/* Enable LCD E=1 */
+// initialize function
+void LCD_init( ){
+	GPIO_voidSetPinMode(CONTROL_PORT ,RS , GPIO_OUTPUT_2MHZ_PP) ;
+	GPIO_voidSetPinMode(CONTROL_PORT ,E , GPIO_OUTPUT_2MHZ_PP) ;
+
+	GPIO_voidSetPinMode(DATA_PORT ,PIN12 , GPIO_OUTPUT_2MHZ_PP) ;
+	GPIO_voidSetPinMode(DATA_PORT ,PIN13 , GPIO_OUTPUT_2MHZ_PP) ;
+	GPIO_voidSetPinMode(DATA_PORT ,PIN14 , GPIO_OUTPUT_2MHZ_PP) ;
+	GPIO_voidSetPinMode(DATA_PORT ,PIN15 , GPIO_OUTPUT_2MHZ_PP) ;
+
+	// 4 bit initialisation
+	_delay_ms(50);
+	LCD_writecmd(0X30) ;
+	_delay_ms(5);
+	LCD_writecmd(0X30) ;
 	_delay_ms(1);
+	LCD_writecmd(0X30) ;
+	_delay_ms(10);
+	LCD_writecmd(0X20) ;
+	_delay_ms(10);
 
-	#if (LCD_mode==4)
-		/* out the highest 4 bits of the required command to the data bus D4 --> D7 */
-		#ifdef HIGH_4_PINS
-		LCD_DATA_PORT = (LCD_DATA_PORT& 0X0F)| (command & 0XF0);
-		#else
-		LCD_DATA_PORT = (LCD_DATA_PORT& 0XF0)| ((command & 0XF0)>>4);
-		#endif
-
-		_delay_ms(1);
-		CLEAR_BIT(LCD_CTRL_PORT,E);	/* disable LCD E=0 */
-		_delay_ms(1);
-		SET_BIT(LCD_CTRL_PORT,E);	/* Enable LCD E=1 */
-		_delay_ms(1);
-
-		/* out the lowest 4 bits of the required command to the data bus D4 --> D7 */
-		#ifdef HIGH_4_PINS
-		LCD_DATA_PORT = (LCD_DATA_PORT& 0X0F)| ((command & 0X0F)<<4);
-		#else
-		LCD_DATA_PORT = (LCD_DATA_PORT& 0XF0)| (command & 0X0F);
-  	  	#endif
-
-		_delay_ms(1);
-		CLEAR_BIT(LCD_CTRL_PORT,E);	/* disable LCD E=0 */
-		_delay_ms(1);
-
-
-
-	#elif (LCD_mode==8)
-		LCD_DATA_PORT = command ;	/* out the required command to the data bus D0 --> D7 */
-		_delay_ms(1);
-		CLEAR_BIT(LCD_CTRL_PORT,E);	/* disable LCD E=0 */
-		_delay_ms(1);
-	#endif
-
-
-
-
-
+	// dislay initialisation
+	LCD_writecmd(0x28) ;	// Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
+	_delay_ms(1);
+	LCD_writecmd(0x08) ;	//Display on/off control --> D=0,C=0, B=0  ---> display off
+	_delay_ms(1);
+	LCD_writecmd(0x01) ;	// clear display
+	_delay_ms(1);
+	_delay_ms(1);
+	LCD_writecmd(0x06) ;	//Entry mode set --> I/D = 1 (increment cursor) & S = 0 (no shift)
+	_delay_ms(1);
+	LCD_writecmd(0x0C) ;	//Display on/off control --> D = 1, C and B = 0. (Cursor and blink, last two bits)
 
 }
+//write data
+void LCD_writechar(u8 data) {
 
-void LCD_displayCharacter(u8 data)
-{
-	SET_BIT(LCD_CTRL_PORT,RS);	/* Data Mode RS=1 */
-	CLEAR_BIT(LCD_CTRL_PORT,RW);	/* write data to LCD so RW=0 */
-	_delay_ms(1);
-	SET_BIT(LCD_CTRL_PORT,E);	 /* Enable LCD E=1 */
-	_delay_ms(1);
-	#if (LCD_mode==4)
-		/* out the highest 4 bits of the required data to the data bus D4 --> D7 */
-		#ifdef HIGH_4_PINS
-		LCD_DATA_PORT = (LCD_DATA_PORT& 0X0F)| (data & 0XF0);
-		#else
-		LCD_DATA_PORT = (LCD_DATA_PORT& 0XF0)| ((data & 0XF0)>>4);
-		#endif
+		//WRITE ON PORTS
+		GPIO_voidSetPinValue(CONTROL_PORT,RS , GPIO_HIGH) ; //rs=1 for data
+		
+		GPIO_voidSetPinValue(DATA_PORT,D7 , (data>>7)&0x01);
+		GPIO_voidSetPinValue(DATA_PORT,D6 , (data>>6)&0x01);
+		GPIO_voidSetPinValue(DATA_PORT,D5 , (data>>5)&0x01);
+		GPIO_voidSetPinValue(DATA_PORT,D4 , (data>>4)&0x01);
 
-		_delay_ms(1);
-		CLEAR_BIT(LCD_CTRL_PORT,E);	/* disable LCD E=0 */
-		_delay_ms(1);
-		SET_BIT(LCD_CTRL_PORT,E);	 /* Enable LCD E=1 */
-		_delay_ms(1);
+		GPIO_voidSetPinValue(CONTROL_PORT,E , GPIO_HIGH);
+		_delay_ms(20);
+		GPIO_voidSetPinValue(CONTROL_PORT,E ,GPIO_LOW) ;
+		_delay_ms(20);
 
-	/* out the lowest 4 bits of the required data to the data bus D4 --> D7 */
-    #ifdef HIGH_4_PINS
-		LCD_DATA_PORT = (LCD_DATA_PORT& 0X0F)| ((data & 0X0F)<<4);
-    #else
-		LCD_DATA_PORT = (LCD_DATA_PORT& 0XF0)| (data & 0X0F);
-    #endif
+		GPIO_voidSetPinValue(DATA_PORT,D7 , (data>>3)&0x01);
+		GPIO_voidSetPinValue(DATA_PORT,D6 , (data>>2)&0x01);
+		GPIO_voidSetPinValue(DATA_PORT,D5 , (data>>1)&0x01);
+		GPIO_voidSetPinValue(DATA_PORT,D4 , (data>>0)&0x01);
 
-		_delay_ms(1);
-		CLEAR_BIT(LCD_CTRL_PORT,E);	/* disable LCD E=0 */
-		_delay_ms(1);
+		GPIO_voidSetPinValue(CONTROL_PORT,E , GPIO_HIGH);
+		_delay_ms(20);
+		GPIO_voidSetPinValue(CONTROL_PORT,E ,GPIO_LOW) ;
+		_delay_ms(20);
+		
+}
+//write command
+void LCD_writecmd(u8 cmd)  {
 
-	#elif (LCD_mode==8)
-		LCD_DATA_PORT = data ;	/* out the required command to the data bus D0 --> D7 */
-		_delay_ms(1);
-		CLEAR_BIT(LCD_CTRL_PORT,E);	/* disable LCD E=0 */
-		_delay_ms(1);
-	#endif
+	//WRITE ON PORTS
+	GPIO_voidSetPinValue(CONTROL_PORT,RS , GPIO_LOW) ;// rs=0 for command
+
+	GPIO_voidSetPinValue(DATA_PORT,D7 , (cmd>>7)&0x01);
+	GPIO_voidSetPinValue(DATA_PORT,D6 , (cmd>>6)&0x01);
+	GPIO_voidSetPinValue(DATA_PORT,D5 , (cmd>>5)&0x01);
+	GPIO_voidSetPinValue(DATA_PORT,D4 , (cmd>>4)&0x01);
+
+
+	GPIO_voidSetPinValue(CONTROL_PORT,E , GPIO_HIGH);
+	_delay_ms(20);
+	GPIO_voidSetPinValue(CONTROL_PORT,E ,GPIO_LOW) ;
+	_delay_ms(20);
+	
+	GPIO_voidSetPinValue(DATA_PORT,D7 , (cmd>>3)&0x01);
+	GPIO_voidSetPinValue(DATA_PORT,D6 , (cmd>>2)&0x01);
+	GPIO_voidSetPinValue(DATA_PORT,D5 , (cmd>>1)&0x01);
+	GPIO_voidSetPinValue(DATA_PORT,D4 , (cmd>>0)&0x01);
+
+	GPIO_voidSetPinValue(CONTROL_PORT,E , GPIO_HIGH);
+	_delay_ms(20);
+	GPIO_voidSetPinValue(CONTROL_PORT,E ,GPIO_LOW) ;
+	_delay_ms(20);
 
 }
-
-void LCD_displayString(const u8 *str)
-{
-
+//function to write string on LCD
+void LCD_writestring(u8 *str){
 	while(*str != '\0')
 	{
-		LCD_displayCharacter(*str);
-		str++;
-
+		LCD_writechar(*str) ;
+		str++ ;
 	}
 }
-
-void LCD_goToRowColumn(u8 row,u8 col)
-{
-	uint8 address;
-	switch(row)
+//select the position you need to display on lcd
+void LCD_goto(u8 row, u8 col){
+	if (row<2 &&col<16)
 	{
-		case 0 :
-			address = col;
+		switch(row){
+			case 0 : LCD_writecmd(0X80+col) ;
 			break;
-
-		case 1 :
-			address = col+0x40;
+			case 1: LCD_writecmd(0XC0+col)  ;
 			break;
-		case 2 :
-			address = col+0x10;
-			break;
-		case 3 :
-			address = col+0x50;
-			break;
-
+		}
+		}else {
+		
 	}
-	LCD_sendCommand(address+SET_CURSOR);
-
 }
+//function to writer number on LCD
+void LCD_writernumber(u16 number) {
+ u16 sum=0   ; u8 num = 0 ;
+	while(number != 0){
+		sum = (number%10) + sum*10  ;
+		number=number/10    ;
+	}
+	while(sum!=0){
+		num = sum%10;
+		LCD_writechar(0x30+num) ;
+		sum = sum/10  ;
+	}
+}
+//function to customize  char
 
-void LCD_displayStringRowColoumn(u8 row,u8 col,const u8 *str)
+void LCD_customchar(u8 x , u8 y ){
+	u8 i    ;
+	u8 j   ;
+	LCD_writecmd(0x40) ;
+	for (i=0 ; i<64 ; i++)
+	{
+		LCD_writechar(make[i]) ;
+	}
+	//LCD_writecmd(0X80) ;
+	LCD_goto(x,y) ;
+	for (j=0 ; j<8 ; j ++)
+	{
+		LCD_writechar(j) ;
+	}
+}
+void LCD_clear (void)
 {
-	LCD_goToRowColumn(row,col);
-	LCD_displayString(str);
-
+	LCD_writecmd(0x01);
+	_delay_ms(2);
 }
-
-void LCD_clear(void)
-{
-	LCD_sendCommand(LCD_CLEAR);
-
-}
-
-void LCD_intgerToString(int data)
-{
-	u8 buff[16];
-	itoa(data,buff,10);
-	LCD_displayString(buff);
-
-}
-
-

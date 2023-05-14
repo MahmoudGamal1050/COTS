@@ -12,29 +12,18 @@
 
 #include "KEYPAD.h"
 #include "KEYPAD_config.h"
+#include "DELAY.h"
+#include "GPIO_interface.h"
 
 
-/*******************************************************************************
- *                      Functions Prototypes		                          *
- *******************************************************************************/
 
-
-#if (N_col==3)
-	static const u8 keypad[4][3] ={
-		{'1','2','3'},
-		{'4','5','6'},
-		{'7','8','9'},
-		{'*','0','#'},
-		};
-
-#elif (N_col==4)
 	static const u8 keypad[4][4] ={
-		{'7','8','9','/'},
-		{'4','5','6','X'},
-		{'1','2','3','-'},
-		{'!','0','=','+'},
+		{1,2,3,4},
+		{5,6,7,8},
+		{9,10,11,12},
+		{13,14,15,16}
 		};
-#endif
+
 
 /*******************************************************************************
  *                      Functions Definitions                                  *
@@ -43,38 +32,63 @@
 
 void KEYPAD_init(void )
 {
-	#if KEYPAD_PORT==GPIOA
-		GPIO_VidSetPortMode( GPIOA , GPIOA_LOW , GPIO_INPUT_PULL_UP_DOWN );
-		GPIO_VidSetPortValue( GPIOA , GPIOA_LOW , GPIO_HIGH );
+		GPIO_voidSetPinMode( GPIOA , ROW1 , GPIO_OUTPUT_2MHZ_PP );
+		GPIO_voidSetPinMode( GPIOA , ROW2 , GPIO_OUTPUT_2MHZ_PP );
+		GPIO_voidSetPinMode( GPIOA , ROW3 , GPIO_OUTPUT_2MHZ_PP );
+		GPIO_voidSetPinMode( GPIOA , ROW4 , GPIO_OUTPUT_2MHZ_PP );
+		
+		GPIO_voidSetPinMode( GPIOB , COL1 , GPIO_INPUT_PULL_UP_DOWN);
+		GPIO_voidSetPinMode( GPIOB , COL2 , GPIO_INPUT_PULL_UP_DOWN);
+		GPIO_voidSetPinMode( GPIOB , COL3 , GPIO_INPUT_PULL_UP_DOWN);
+		GPIO_voidSetPinMode( GPIOB , COL4 , GPIO_INPUT_PULL_UP_DOWN);
+
 
 	
-	#elif KEYPAD_PORT==GPIOB
-		GPIO_VidSetPortMode( GPIOB , GPIOAB_LOW , GPIO_INPUT_PULL_UP_DOWN );
-		GPIO_VidSetPortValue( GPIOB , GPIOB_LOW , GPIO_HIGH );
-	
-	#endif
 
 }
 
 u8 getPressedKey(void)
 {
-	u8 row,col;
+	u8 row,col,col2;
 	while(1)
 	{
 
-		for(col=0;col<N_col;col++)
+		for(row=0;row<4;row++)
 		{
 			
-			GPIO_voidSetPinMode(GPIOA, (col+4),GPIO_OUTPUT_2MHZ_PP );
-			GPIO_voidSetPinValue(GPIOA, (col+4),GPIOA_LOW);
+			GPIO_voidSetPinValue(GPIOA, 4, GPIO_HIGH);
+			GPIO_voidSetPinValue(GPIOA, 5, GPIO_HIGH);
+			GPIO_voidSetPinValue(GPIOA, 6, GPIO_HIGH);
+			GPIO_voidSetPinValue(GPIOA, 7, GPIO_HIGH);
 
-			for(row=0;row<N_row;row++)
+			GPIO_voidSetPinValue(GPIOA, row+4, GPIO_LOW);
+
+
+			for(col=0;col<4;col++)
 			{
-				if(GPIO_u8GetPinValue(GPIOA, row))
-						{
-							return keypad[row][col];
-							
-						}
+				switch(col)
+				{
+					case 0 : col2 = 11;
+					break;
+					case 1 : col2 = 10;
+					break;
+					case 2 : col2 = 1;
+					break;
+					case 3 : col2 = 0;
+					break;
+				}
+				if(!GPIO_u8GetPinValue(GPIOB, col2))
+				{
+					_delay_ms(100);
+					if(!GPIO_u8GetPinValue(GPIOB, col2))
+					{
+						return keypad[row][col];
+					}
+
+
+				}
+				
+						
 			}
 
 		}

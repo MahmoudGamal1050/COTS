@@ -24,7 +24,7 @@
 /*Function to initialize keypad*/  
 void KEYPAD_init(void );
 
- getPressedKey(void);
+ u8 getPressedKey(void);
 
 
 #endif /* KEYPAD_H_ */

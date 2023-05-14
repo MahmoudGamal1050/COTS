@@ -1,65 +1,51 @@
- /******************************************************************************
+	/*
+ * LCD.h
  *
- * Module: LCD
- *
- * File Name: lcd.h
- *
- * Description: Header file for the LCD driver
- *
- * Author: Mohamed Tarek
- *
- *******************************************************************************/
+ * Created: 3/13/2023 1:55:17 AM
+ *  Author: Mahmoud Gamal
+ */ 
+
 
 #ifndef LCD_H_
 #define LCD_H_
 
-#include "Std_Types.h"
-#include "Bit_Math.h"
-
-#include "GPIO_interface.h"
-
-
-/*******************************************************************************
- *                      Preprocessor Macros                                    *
- *******************************************************************************/
-
-/* LCD Data bits mode configuration */
-#define LCD_mode 8
-//#define HIGH_4_PINS
-
-/* LCD HW Pins */
-#define LCD_CTRL_PORT PORTD
-#define LCD_CTRL_PORT_DIR DDRD
-#define LCD_DATA_PORT PORTC
-#define LCD_DATA_PORT_DIR DDRC
-#define RS PD4
-#define RW PD5
-#define E PD6
-
-/********* LCD Commands*************/
-#define LCD_CLEAR 0X01
-#define CURSOR_OFF 0X0C
-#define CURSOR_ON 0X0E
-#define LCD_2_LINES_8_BIT 0X38
-#define SET_CURSOR 0X80
-#define LCD_2_LINES_4_BIT 0X28
-#define FOUR_BITS_DATA_MODE 0x02
+#include	"STD_TYPES.h"
+#include	"BIT_MATH.h"
+#include    "GPIO_interface.h"
+#include 	"STK_interface.h"
 
 
+/*********** Define the LCD PINS below ****************/
+#define CONTROL_PORT		 GPIOA
+#define  RS					 PIN11
+#define  E                   PIN8
 
-/*******************************************************************************
- *                      Functions Prototypes                                   *
- *******************************************************************************/
+#define DATA_PORT 			 GPIOB
+#define D4					 PIN15
+#define D5					 PIN14
+#define D6					 PIN13
+#define D7					 PIN12
 
-void LCD_init(void);
-void LCD_sendCommand(u8 command);
-void LCD_displayCharacter(u8 data);
-void LCD_displayString(const u8 *str);
-void LCD_clear(void);
-void LCD_displayStringRowColoumn(uint8 row,u8 col,const u *str);
-void LCD_goToRowColumn(u8 row,u8 col);
-void LCD_intgerToString(int data);
+// function prototype
+// initialize function
+void LCD_init(void ) ;
+//write data
+void LCD_writechar(u8 data) ;
+//write command
+void LCD_writecmd(u8 cmd)  ;
+//function to write string on LCD
+void LCD_writestring(u8 *str);
+//select the position you need to display on lcd
+void LCD_goto(u8 row, u8 col);
+//function to writer number on LCD
+void LCD_writernumber(u16 number) ;
+//function to customize  char
 
+void LCD_customchar(u8 x , u8 y );
+void LCD_clear (void);
+
+
+void	_delay_ms(u32 ticks);
 
 
 

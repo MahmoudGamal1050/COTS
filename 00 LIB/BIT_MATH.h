@@ -13,6 +13,7 @@
 #ifndef BIT_MATH_H_
 #define BIT_MATH_H_
 
+#define NULL ((void *)0)
 
 #define SET_BIT(REG , BIT) REG |= (1 << (BIT))
 #define CLR_BIT(REG , BIT) REG &= ~(1 << (BIT))
@@ -24,5 +25,6 @@
 
 /* Check if a specific bit is cleared in any register and return true if yes */
 #define BIT_IS_CLEAR(REG,BIT) ( !(REG & (1<<BIT)) )
+
 
 #endif /* BIT_MATH_H_ */

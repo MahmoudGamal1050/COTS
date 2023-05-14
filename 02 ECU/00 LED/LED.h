@@ -13,6 +13,7 @@
 #include	"BIT_MATH.h"
 #include    "GPIO_interface.h"
 
+void led_init(u8 gpiox, u8 pin);
 void led_on(u8 gpiox, u8 pin,u8 connection);
 void led_off(u8 gpiox, u8 pin,u8 connection);
 void led_toggle(u8 gpiox, u8 pin);

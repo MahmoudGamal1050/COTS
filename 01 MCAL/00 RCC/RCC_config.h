@@ -27,9 +27,9 @@
 *******************************************************************/
 #define	RCC_SYS_CLK		HSI
 
-#if RCC_SYS_CLK = PLL 
-#define RCC_PLL_SRC		    PLL_HSE
-#define RCC_PLL_MUL_FACTOR  2         /* RCC_PLL_MUL_FACTOR : 2:16 */
+#if RCC_SYS_CLK == PLL
+#define RCC_PLL_SRC		    PLL_HSI
+#define RCC_PLL_MUL_FACTOR    4       /* RCC_PLL_MUL_FACTOR : 2:16 */
 #endif
 
 

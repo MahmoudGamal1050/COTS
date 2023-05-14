@@ -101,7 +101,7 @@ void		RCC_voidEnablePerClk(u8 BusId , u8 PerId)
 	{
 		switch(BusId)
 		{
-			case	RCC_AHB	:	SET_BIT(RCC_AHBENR,PerId) ;		break;
+			case	RCC_AHB		:	SET_BIT(RCC_AHBENR,PerId) ;	break;
 			case	RCC_APB1	:	SET_BIT(RCC_APB1ENR,PerId);	break;
 			case	RCC_APB2	:	SET_BIT(RCC_APB2ENR,PerId);	break;
 		

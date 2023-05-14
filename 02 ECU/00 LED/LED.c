@@ -7,9 +7,12 @@
 #include	"LED.h"
 
 
-void led_on(u8 gpiox, u8 pin,u8 connection)
+void led_init(u8 gpiox, u8 pin)
 {
 	GPIO_voidSetPinMode(gpiox,pin,GPIO_OUTPUT_2MHZ_PP);
+}
+void led_on(u8 gpiox, u8 pin,u8 connection)
+{
 	
 	if(connection==NEGATIVE_LOGIC)
 	{
@@ -27,7 +30,6 @@ void led_on(u8 gpiox, u8 pin,u8 connection)
 }
 void led_off(u8 gpiox, u8 pin,u8 connection)
 {
-	GPIO_voidSetPinMode(gpiox,pin,GPIO_OUTPUT_2MHZ_PP);
 	if(connection==NEGATIVE_LOGIC)
 	{		
 		GPIO_voidSetPinValue(gpiox,pin, GPIO_HIGH);
@@ -43,7 +45,7 @@ void led_off(u8 gpiox, u8 pin,u8 connection)
 
 void led_toggle(u8 gpiox, u8 pin)
 {
-	GPIO_voidSetPinMode(gpiox,pin,GPIO_OUTPUT_2MHZ_PP);
+
 
 	GPIO_voidTogPin(gpiox,pin);	
 
