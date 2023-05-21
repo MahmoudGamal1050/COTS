@@ -8,12 +8,6 @@
 #define I2C_INTERFACE_H
 
 
-#define		READ							0
-#define		WRITE							1
-
-#define		ENABLED							0
-#define		DISABLED						1
-
 void I2C_VoidInit(void);
 void I2C_VoidStart(void);
 void I2C_VoidSendAddress(u8 address);
