@@ -1,6 +1,6 @@
 
 #include	"STD_TYPES.h"
-#include	"BIT-MATH.h"
+#include	"BIT_MATH.h"
 
 #include	"SPI_interface.h"
 #include	"SPI_private.h"
@@ -12,10 +12,10 @@
 /*********************** Function Implementation  ***************/
 /****************************************************************/
 
-void (*SPI1_CallBack)(void);
+void (*SPI1_CallBack)(u8);
 void SPI1_voidInit(void){
 	
-#if   SP1_STATUS == MSPI_ENABLE
+#if   SPI1_STATUS == SPI_ENABLE
 
 #if		SPI1_CLOCK_MODE == SPI_MODE0
 
@@ -47,7 +47,7 @@ void SPI1_voidInit(void){
 
 #if   SPI1_DATA_ORDER == SPI_MSB_FIRST
 
-	CLR_BIT( MSPI1 -> CR1 , 7 );
+	CLR_BIT( SPI1 -> CR1 , 7 );
 
 #elif SPI1_DATA_ORDER == SPI_LSB_FIRST
 
@@ -105,7 +105,7 @@ u8 SPI1_voidSendReciveByte(u8 TXData)
 {
 	u8 RXData;
 	/* Slave Select=low*/
-	GPIO_voidSetPinValue(SLAVE_PORT,SLAVE_PIN,GPIO_LOW);
+	GPIO_voidSetPinValue(SLAVE_SELECT,GPIO_LOW);
 	/* Send data*/
 	SPI1->DR=TXData;
 	/* Wait on Busy Flag*/
@@ -113,7 +113,7 @@ u8 SPI1_voidSendReciveByte(u8 TXData)
 	/*Return Data*/
 	RXData = SPI1->DR;
 		/* Slave Select=HIGH*/
-	GPIO_voidSetPinValue(SLAVE_SELECT,SLAVE_PIN,GPIO_HIGH);
+	GPIO_voidSetPinValue(SLAVE_SELECT,GPIO_HIGH);
 	return RXData;
 	
 	
@@ -121,18 +121,20 @@ u8 SPI1_voidSendReciveByte(u8 TXData)
 
 
 
-void SPI1_voidSendReciveByteAsync(u8 TXData,void (*ptr) (u8));
+void SPI1_voidSendReciveByteAsync(u8 TXData,void (*ptr) (u8))
+{
 	SPI1_CallBack = ptr;
-	GPIO_voidSetPinValue(SLAVE_PORT,SLAVE_PIN,GPIO_LOW);
+	GPIO_voidSetPinValue(SLAVE_SELECT,GPIO_LOW);
 	/* Send data*/
 	SPI1->DR=TXData;
 
 }
 
-void SPI1_IRQHandler(void){
+void SPI1_IRQHandler(void)
+{
 
 	SPI1_CallBack(SPI1->DR);
-	GPIO_voidSetPinValue(SLAVE_SELECT,SLAVE_PIN,GPIO_HIGH);
+	GPIO_voidSetPinValue(SLAVE_SELECT,GPIO_HIGH);
 
 
 }

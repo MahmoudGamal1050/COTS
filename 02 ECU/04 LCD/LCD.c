@@ -8,16 +8,7 @@
 //INCLUDEING PART 
 #include "LCD.h"
 #include "LCDEXTRA.h"
-
-
-void	_delay_ms(u32 ticks)
-{
-	u32 i;
-	for( i = 0; i < (ticks * 500) ; i++)
-	{
-		asm("NOP");
-	}
-}
+#include "DELAY.h"
 
 
 // initialize function

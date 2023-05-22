@@ -15,7 +15,8 @@ typedef  struct{
 	u32 I2SPR;
 }SPI_t;
 
-#define SPI1  ((volatile SPI_t *)(0x40013000))
+#define SPI1 (( volatile SPI_t* ) 0x40013000 )
+
 
 
 #endif

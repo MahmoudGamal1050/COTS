@@ -19,11 +19,11 @@ typedef struct{
 }UART_t;
 
 
-#define USART1 ( ( volatile UART_t* ) 0x40013800 )
+#define UART1 ( ( volatile UART_t* ) 0x40013800 )
 							   
-#define USART2 ( ( volatile UART_t* ) 0x40004400 )
+#define UART2 ( ( volatile UART_t* ) 0x40004400 )
 							   
-#define USART3 ( ( volatile UART_t* ) 0x40004800 )
+#define UART3 ( ( volatile UART_t* ) 0x40004800 )
 							   
 #define UART4 (  ( volatile UART_t* ) 0x40004C00 )
 							   

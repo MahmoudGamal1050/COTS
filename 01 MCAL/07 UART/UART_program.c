@@ -47,8 +47,8 @@ void UART_VoidInit( void )
 
 		#elif UART1_PARITY == ODD_PARITY
 
-					SET_BIT( MUSART1 -> CR1 , 10 );
-					SET_BIT( MUSART1 -> CR1 , 11 );
+					SET_BIT( UART1 -> CR1 , 10 );
+					SET_BIT( UART1 -> CR1 , 11 );
 
 		#endif
 
@@ -58,7 +58,7 @@ void UART_VoidInit( void )
 					CLR_BIT( UART1 -> CR1 , 6 );
 					CLR_BIT( UART1 -> CR1 , 7 );
 
-		#elif USART1_INTERRUPT == TXE_INT_ENABLE
+		#elif UART1_INTERRUPT == TXE_INT_ENABLE
 
 					SET_BIT( UART1 -> CR1 , 7 );
 
@@ -96,7 +96,7 @@ void UART_VoidInit( void )
 
 					CLR_BIT( UART1 -> CR2 , 12 ); CLR_BIT( UART1 -> CR2 , 13 );
 
-		#elif USART1_STOP_BITS == HALF_STOP_BIT
+		#elif UART1_STOP_BITS == HALF_STOP_BIT
 
 					SET_BIT( UART1 -> CR2 , 12 ); CLR_BIT( UART1 -> CR2 , 13 );
 
